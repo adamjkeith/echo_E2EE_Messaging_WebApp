@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious"></script>
+    <script src="scripts/OTP.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="styles/register.css">
+</head>
+<body>
+<div class="container">
+    <image src = "images/logo.png" alt = "Logo" style = "width: auto; height: 120px;">
+    <form id="otpForm">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <input type="submit" value="Login">
+    </form>
+    <p>You will find the OTP on the authenticator app you used to set up your account.</p>
+</div>
+<script>
+    function base32Encode(str) {
+        var base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        var bits = '';
+        var encoded = '';
+        for (var i = 0; i < str.length; i++) {
+            bits += str.charCodeAt(i).toString(2).padStart(8, '0');
+        }
+        while (bits.length % 5 !== 0) {
+            bits += '0';
+        }
+        for (var i = 0; i < bits.length; i += 5) {
+            var chunk = bits.substr(i, 5);
+            encoded += base32Chars[parseInt(chunk, 2)];
+        }
+        return encoded;
+    }
+    var phoneNumber = localStorage.getItem("phoneNumber");
+    var encryptedSecret = localStorage.getItem("encryptedSecret");
+    if (!phoneNumber) {
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        var phoneNumber = localStorage.getItem("phoneNumber");
+        if (!phoneNumber) {
+            return;
+        }
+        $.ajax({
+            url: "php/fetch_secret.php",
+            method: "POST",
+            data: { phoneNumber: phoneNumber },
+            success: function(response) {
+                if (response.success) {
+                    var encryptedSecret = response.data.secret;
+                    var secret = decryptAES(encryptedSecret, phoneNumber);
+                    encodedSecret = base32Encode(secret);
+                } else {
+                }
+            },
+            error: function(xhr, status, error) {
+
+            }
+        });
+    });
+    function generateTOTP(secret) {
+        var totp = new jsOTP.totp();
+        return totp.getOtp(secret);
+    }
+    function validateOTP(inputOTP) {
+        var expectedOTP = generateTOTP(encodedSecret);
+        return inputOTP === expectedOTP;
+    }
+    document.getElementById('otpForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var otpInput = document.getElementById('otp').value;
+        if (validateOTP(otpInput)) {
+            window.location.href = "home.html";
+        } else {
+
+            alert('OTP is incorrect. Please try again.');
+        }
+    });
+    function decryptAES(ciphertext, key) {
+        const bytes  = CryptoJS.AES.decrypt(ciphertext, key);
+
+        return bytes.toString(CryptoJS.enc.Utf8);
+    }
+</script>
+</body>
+</html>

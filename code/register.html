@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious"></script>
+    <script src="scripts/OTP.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="styles/register.css">
+</head>
+<body>
+<div class="container">
+    <canvas id="qrcode"></canvas>
+    <form id="otpForm">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <input type="submit" value="Login">
+    </form>
+    <p>Scan the QR code using your authenticator app to set up OTP.</p>
+</div>
+<script>
+    function generateQRCodeWithLogo(url) {
+        var canvas = document.getElementById('qrcode');
+        var qr = new QRious({
+            element: canvas,
+            value: url,
+            size: 200
+        });
+        var logo = new Image();
+        logo.src = 'images/qrlogo.png';
+        logo.onload = function() {
+            var ctx = canvas.getContext('2d');
+            var logoSize = qr.size / 4;
+            var x = (qr.size - logoSize) / 2;
+            var y = (qr.size - logoSize) / 2;
+            ctx.drawImage(logo, x, y, logoSize, logoSize);
+        };
+    }
+    function generateSecret() {
+        var secret = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; 
+        for (var i = 0; i < 20; i++) { 
+            secret += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return secret;
+    }
+    function base32Encode(str) {
+        var base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        var bits = '';
+        var encoded = '';
+        for (var i = 0; i < str.length; i++) {
+            bits += str.charCodeAt(i).toString(2).padStart(8, '0');
+        }
+        while (bits.length % 5 !== 0) {
+            bits += '0';
+        }
+        for (var i = 0; i < bits.length; i += 5) {
+            var chunk = bits.substr(i, 5);
+            encoded += base32Chars[parseInt(chunk, 2)];
+        }
+        return encoded;
+    }
+    var phoneNumber = localStorage.getItem("phoneNumber");
+    if (!phoneNumber) {
+        console.error("Phone number is not available in local storage.");
+    }
+    var secret = generateSecret();
+    var encodedSecret = base32Encode(secret);
+    function generateTOTP(secret) {
+        var totp = new jsOTP.totp();
+        return totp.getOtp(secret);
+    }
+    function validateOTP(inputOTP) {
+        var expectedOTP = generateTOTP(encodedSecret);
+        return inputOTP === expectedOTP;
+    }
+    document.getElementById('otpForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var otpInput = document.getElementById('otp').value;
+        if (validateOTP(otpInput)) {
+            const text = secret;
+            const key = phoneNumber;
+            const encryptedSecret = encryptAES(text, key);
+            $.ajax({
+            url: "php/process_login.php",
+            type: "POST",
+            data: { key: key, encryptedSecret: encryptedSecret },
+            success: function(response) {
+                window.location.href = "home.html";
+            },
+    });    
+        } else {
+            alert('OTP is incorrect. Please try again.');
+        }
+    });
+    function encryptAES(text, key) {
+    return CryptoJS.AES.encrypt(text, key).toString();
+    }
+    var otpURL = "otpauth://totp/Echo%20Messenger:" + phoneNumber + "?secret=" + encodedSecret + "&issuer=Echo%20Messenger&algorithm=SHA1&digits=6&period=30";
+    generateQRCodeWithLogo(otpURL);
+</script>
+</body>
+</html>

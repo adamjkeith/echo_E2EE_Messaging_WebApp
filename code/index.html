@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+  <div id="container">
+    <img id="logo" src="images/logo.png" alt="Logo">
+    <form id="phoneForm" method="post" action="php/check_number.php">
+      <div id="phoneContainer">
+        <div id="countryBox" onclick="showAlert()">
+          <img src="images/uk.png" alt="UK Flag" style="width: 20px; height: auto;">
+          <span>+44</span>
+        </div>
+        <input type="tel" id="phone" name="phone" title="Please enter a valid phone number" required>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <p id="validationMessage"></p>
+  </div>
+  <script src="scripts/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messaging App</title>
+  <link rel="stylesheet" href="styles/chat.css">
+</head>
+<body>
+  <main>
+    <div class="username-container" id="username-container">
+      <span id="username1" class="username u1"></span>
+      <div class="logo-container">
+        <img src="images/logo.png" alt="Logo" class="logo">
+      </div>
+      <span id="username2" class="username2"></span>   
+    </div>    
+  </main>
+  <button onclick="back()" class="logout-button">
+    <img src="images/button.png" alt="Logout" class="logout-image">
+    <span class="logout-text">BACK</span>
+  </button>
+
+  <div class="container">
+
+    <div class="messages-container" id="messages-container">
+
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Type your message here...">
+        <button id="sendButton"></button>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="scripts/chat.js"></script>
+</body>
+</html>
