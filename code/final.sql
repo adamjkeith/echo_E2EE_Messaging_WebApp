@@ -36,11 +36,6 @@ CREATE TABLE `invites` (
 -- Dumping data for table `invites`
 --
 
-INSERT INTO `invites` (`number`, `invites`) VALUES
-('7925592814', ''),
-('7123456789', '');
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `live`
@@ -52,13 +47,6 @@ CREATE TABLE `live` (
   `recipe` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `live`
---
-
-INSERT INTO `live` (`sessionID`, `number`, `recipe`) VALUES
-('j7P$9sLXfYb3Z*qp', 792559284, '@2hG!l5A$rK6t#vU'),
-('TmpnMk561KZiEu26', 7925592814, 'MjM0ODQ3Uj9VJFmE');
 
 -- --------------------------------------------------------
 
@@ -71,13 +59,8 @@ CREATE TABLE `logins` (
   `key` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `logins`
---
 
-INSERT INTO `logins` (`number`, `key`) VALUES
-(7123456789, 'U2FsdGVkX1/bfzLw3ua5zFpQM3d0QJzHiIy38DeuxrQ5w0JsgidozIMFv0aAc7GG'),
-(7925592814, 'U2FsdGVkX19TtypKG96AJB09zgrHibYOorjE5xTRK1nDI1QZ9lTjpyTUsLgmKN4r');
+
 
 --
 -- Indexes for dumped tables
